@@ -60,21 +60,42 @@ def clean_data(df):
     # TODO: Fill missing 'unit_price' with df['unit_price'].median()
     # TODO: Parse 'date' column: pd.to_datetime(df['date'], errors='coerce')
     # TODO: Print progress and return cleaned DataFrame
-    def clean_data(df):
+    
+    """
+    Clean the input DataFrame by handling missing values and fixing data types.
 
-      """Handle missing values and fix data types. Returns a cleaned DataFrame."""
+    Steps:
+    1. Work on a copy of the input to avoid modifying it in place.
+    2. Fill missing 'quantity' and 'unit_price' values with the median of each column.
+       - If the entire column is missing, fill with 0 as a fallback.
+    3. Convert 'date' column to datetime (invalid dates become NaT).
+    4. Print a progress message showing the number of records after cleaning.
     
-    # Fill missing values
-    df['quantity'] = df['quantity'].fillna(df['quantity'].median())
-    df['unit_price'] = df['unit_price'].fillna(df['unit_price'].median())
+    Args:
+        df (pd.DataFrame): Raw DataFrame from load_data().
+        
+    Returns:
+        pd.DataFrame: Cleaned DataFrame.
+    """
+    # Step 1: Work on a copy
+    df = df.copy()
     
-    # Convert date column to datetime
+    # Step 2: Handle missing 'quantity'
+    if df['quantity'].isna().all():
+        df['quantity'] = 0
+    else:
+        df['quantity'] = df['quantity'].fillna(df['quantity'].median())
+    
+    # Step 2: Handle missing 'unit_price'
+    if df['unit_price'].isna().all():
+        df['unit_price'] = 0
+    else:
+        df['unit_price'] = df['unit_price'].fillna(df['unit_price'].median())
+    
+    # Step 3: Convert 'date' column to datetime
     df['date'] = pd.to_datetime(df['date'], errors='coerce')
     
-    # Drop rows where both quantity and unit_price are missing
-    df.dropna(subset=['quantity', 'unit_price'], how='all', inplace=True)
-    
-    # Print progress
+    # Step 4: Print progress
     print(f"Cleaned data: {len(df)} records")
     
     return df
